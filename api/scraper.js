@@ -147,7 +147,7 @@ export default async function handler(req, res) {
     } catch (error) {
         // Kirim pesan error jika terjadi kesalahan
         console.error(error); // Log error di sisi server untuk debugging
-        res.status(500).json({ 
+        res.status(400).json({ 
             success: false, 
             error: error.message 
         });
