@@ -1,0 +1,19 @@
+{
+  "name": "tender-scraper-api",
+  "version": "1.0.0",
+  "description": "API untuk scraping data tender Kementerian Kesehatan",
+  "main": "api/scraper.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step required'",
+    "test": "node test-local.js"
+  },
+  "keywords": ["tender", "scraper", "api", "kemkes"],
+  "author": "Your Name",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.x"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
