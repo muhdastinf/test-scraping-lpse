@@ -1,9 +1,9 @@
-// Import modul yang diperlukan
+// Import fungsi dari scraper.js (perlu sedikit modifikasi)
 const https = require('https');
 const querystring = require('querystring');
 
 /**
- * Mengambil token dan cookie dari halaman utama lelang.
+ * Copy fungsi-fungsi dari scraper.js
  */
 function getTokenAndCookie(url, headers) {
     return new Promise((resolve, reject) => {
@@ -14,8 +14,6 @@ function getTokenAndCookie(url, headers) {
             res.on('data', (chunk) => {
                 html += chunk;
             });
-
-            console.log(html);
 
             res.on('end', () => {
                 const tokenRegex = /authenticityToken = '([a-f0-9]+)';/;
@@ -34,9 +32,6 @@ function getTokenAndCookie(url, headers) {
     });
 }
 
-/**
- * Mengirim request POST untuk mendapatkan data tender.
- */
 function postForTenderData(url, payload, headers) {
     return new Promise((resolve, reject) => {
         const postData = querystring.stringify(payload);
@@ -78,98 +73,103 @@ function postForTenderData(url, payload, headers) {
 }
 
 /**
- * Fungsi utama yang menjalankan proses scraping.
+ * Test function
  */
-async function runScraper(year = 2025, pageNumber = 1, pageSize = 5) {
+async function testScraper() {
+    const year = 2025;
+    const pageNumber = 1;
+    const pageSize = 5;
+    
     const baseUrl = 'https://spse.inaproc.id/kemkes';
     const lelangPageUrl = `${baseUrl}/lelang`;
     const dataUrl = `${baseUrl}/dt/lelang?tahun=${year}`;
+
     const commonHeaders = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
     };
 
-    // Step 1: Get token and cookie
-    const { token, cookie } = await getTokenAndCookie(baseUrl, commonHeaders);
+    console.log(`🚀 Testing scraper untuk tahun ${year}, halaman ${pageNumber}...`);
+    console.time('Total Duration');
 
-    // Step 2: Build payload
-    const start = (pageNumber - 1) * pageSize;
-    const payload = {
-        'draw': pageNumber,
-        'columns[0][data]': '0', 'columns[0][name]': '', 'columns[0][searchable]': 'true', 'columns[0][orderable]': 'true', 'columns[0][search][value]': '', 'columns[0][search][regex]': 'false',
-        'columns[1][data]': '1', 'columns[1][name]': '', 'columns[1][searchable]': 'true', 'columns[1][orderable]': 'true', 'columns[1][search][value]': '', 'columns[1][search][regex]': 'false',
-        'columns[2][data]': '2', 'columns[2][name]': '', 'columns[2][searchable]': 'true', 'columns[2][orderable]': 'true', 'columns[2][search][value]': '', 'columns[2][search][regex]': 'false',
-        'columns[3][data]': '3', 'columns[3][name]': '', 'columns[3][searchable]': 'false', 'columns[3][orderable]': 'false', 'columns[3][search][value]': '', 'columns[3][search][regex]': 'false',
-        'columns[4][data]': '4', 'columns[4][name]': '', 'columns[4][searchable]': 'true', 'columns[4][orderable]': 'true', 'columns[4][search][value]': '', 'columns[4][search][regex]': 'false',
-        'columns[5][data]': '5', 'columns[5][name]': '', 'columns[5][searchable]': 'true', 'columns[5][orderable]': 'true', 'columns[5][search][value]': '', 'columns[5][search][regex]': 'false',
-        'order[0][column]': '5', 'order[0][dir]': 'desc',
-        'start': start,
-        'length': pageSize,
-        'search[value]': '',
-        'search[regex]': 'false',
-        'authenticityToken': token
-    };
-
-    // Step 3: POST request
-    const headersForPost = {
-        ...commonHeaders,
-        'Cookie': cookie,
-        'Referer': lelangPageUrl
-    };
-
-    const tenderData = await postForTenderData(dataUrl, payload, headersForPost);
-
-    return {
-        success: true,
-        data: tenderData,
-        metadata: { year, pageNumber, pageSize }
-    };
-}
-
-
-/**
- * Handler utama untuk Vercel Serverless Function.
- * Fungsi ini akan menangani permintaan HTTP yang masuk.
- */
-export default async function handler(req, res) {
     try {
-        // Ambil parameter dari query URL, dengan nilai default jika tidak ada
-        const year = req.query.year || 2025;
-        const page = req.query.page || 1;
-        const size = req.query.size || 5;
-        console.log('test');
+        // Step 1: Get token and cookie
+        console.log('   [1/3] Mengambil halaman utama...');
+        const { token, cookie } = await getTokenAndCookie(lelangPageUrl, commonHeaders);
+        console.log(`   [1/3] ✔️ Token ditemukan: ${token.substring(0, 10)}...`);
 
-        // Jalankan scraper dengan parameter tersebut
-        const result = await runScraper(parseInt(year), parseInt(page), parseInt(size));
+        // Step 2: Build payload
+        const start = (pageNumber - 1) * pageSize;
+        const payload = {
+            'draw': pageNumber,
+            'columns[0][data]': '0', 'columns[0][name]': '', 'columns[0][searchable]': 'true', 'columns[0][orderable]': 'true', 'columns[0][search][value]': '', 'columns[0][search][regex]': 'false',
+            'columns[1][data]': '1', 'columns[1][name]': '', 'columns[1][searchable]': 'true', 'columns[1][orderable]': 'true', 'columns[1][search][value]': '', 'columns[1][search][regex]': 'false',
+            'columns[2][data]': '2', 'columns[2][name]': '', 'columns[2][searchable]': 'true', 'columns[2][orderable]': 'true', 'columns[2][search][value]': '', 'columns[2][search][regex]': 'false',
+            'columns[3][data]': '3', 'columns[3][name]': '', 'columns[3][searchable]': 'false', 'columns[3][orderable]': 'false', 'columns[3][search][value]': '', 'columns[3][search][regex]': 'false',
+            'columns[4][data]': '4', 'columns[4][name]': '', 'columns[4][searchable]': 'true', 'columns[4][orderable]': 'true', 'columns[4][search][value]': '', 'columns[4][search][regex]': 'false',
+            'columns[5][data]': '5', 'columns[5][name]': '', 'columns[5][searchable]': 'true', 'columns[5][orderable]': 'true', 'columns[5][search][value]': '', 'columns[5][search][regex]': 'false',
+            'order[0][column]': '5', 'order[0][dir]': 'desc',
+            'start': start,
+            'length': pageSize,
+            'search[value]': '',
+            'search[regex]': 'false',
+            'authenticityToken': token
+        };
+        console.log(`   [2/3] ✔️ Payload untuk halaman ${pageNumber} dibuat.`);
 
-        // Kirim hasil sebagai respons JSON jika berhasil
-        res.status(200).json(result);
+        // Step 3: POST request
+        console.log('   [3/3] Mengirim request POST untuk mendapatkan data JSON...');
+        const headersForPost = {
+            ...commonHeaders,
+            'Cookie': cookie,
+            'Referer': lelangPageUrl
+        };
+
+        const tenderData = await postForTenderData(dataUrl, payload, headersForPost);
+
+        console.log('✅ Berhasil! Data diterima.');
+        console.timeEnd('Total Duration');
+        
+        console.log("\n--- HASIL DATA TENDER ---");
+        console.log(`Total records: ${tenderData.recordsTotal || 'N/A'}`);
+        console.log(`Records filtered: ${tenderData.recordsFiltered || 'N/A'}`);
+        console.log(`Data length: ${tenderData.data?.length || 0}`);
+        
+        if (tenderData.data && tenderData.data.length > 0) {
+            console.log("\nSample data");
+            console.log(JSON.stringify(tenderData.data, null, 2));
+        }
+
+        return {
+            success: true,
+            data: tenderData,
+            metadata: { year, pageNumber, pageSize }
+        };
 
     } catch (error) {
-        // Kirim pesan error jika terjadi kesalahan
-        console.error(error); // Log error di sisi server untuk debugging
-        res.status(500).json({ 
-            success: false, 
-            error: error.message 
-        });
+        console.error("❌ Terjadi kesalahan:", error.message);
+        console.timeEnd('Total Duration');
+        return {
+            success: false,
+            error: error.message
+        };
     }
 }
 
 // Run test
-// if (require.main === module) {
-//     runScraper()
-//         .then(result => {
-//             console.log('\n=== TEST COMPLETED ===');
-//             if (result.success) {
-//                 console.log(result.data)
-//                 console.log('Status: SUCCESS ✅');
-//             } else {
-//                 console.log('Status: FAILED ❌');
-//                 console.log('Error:', result.error);
-//             }
-//         })
-//         .catch(err => {
-//             console.error('Unhandled error:', err);
-//         });
-// }
+if (require.main === module) {
+    testScraper()
+        .then(result => {
+            console.log('\n=== TEST COMPLETED ===');
+            if (result.success) {
+                console.log('Status: SUCCESS ✅');
+            } else {
+                console.log('Status: FAILED ❌');
+                console.log('Error:', result.error);
+            }
+        })
+        .catch(err => {
+            console.error('Unhandled error:', err);
+        });
+}
 
-// module.exports = { runScraper };
+module.exports = { testScraper };
