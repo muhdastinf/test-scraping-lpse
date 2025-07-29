@@ -80,7 +80,7 @@ function postForTenderData(url, payload, headers) {
 /**
  * Fungsi utama yang menjalankan proses scraping.
  */
-async function runScraper(year, pageNumber, pageSize) {
+async function runScraper(year = 2025, pageNumber = 1, pageSize = 5) {
     const baseUrl = 'https://spse.inaproc.id/kemkes';
     const lelangPageUrl = `${baseUrl}/lelang`;
     const dataUrl = `${baseUrl}/dt/lelang?tahun=${year}`;
@@ -136,6 +136,7 @@ export default async function handler(req, res) {
         const year = req.query.year || 2025;
         const page = req.query.page || 1;
         const size = req.query.size || 5;
+        console.log('test');
 
         // Jalankan scraper dengan parameter tersebut
         const result = await runScraper(parseInt(year), parseInt(page), parseInt(size));
@@ -152,3 +153,23 @@ export default async function handler(req, res) {
         });
     }
 }
+
+// Run test
+// if (require.main === module) {
+//     runScraper()
+//         .then(result => {
+//             console.log('\n=== TEST COMPLETED ===');
+//             if (result.success) {
+//                 console.log(result.data)
+//                 console.log('Status: SUCCESS ✅');
+//             } else {
+//                 console.log('Status: FAILED ❌');
+//                 console.log('Error:', result.error);
+//             }
+//         })
+//         .catch(err => {
+//             console.error('Unhandled error:', err);
+//         });
+// }
+
+// module.exports = { runScraper };
