@@ -1,19 +1,9 @@
 {
-  "name": "tender-scraper-api",
+  "name": "vercel-scraper-kemkes",
   "version": "1.0.0",
-  "description": "API untuk scraping data tender Kementerian Kesehatan",
+  "description": "Scraper data tender dari SPSE Kemkes di Vercel",
   "main": "api/scraper.js",
   "scripts": {
-    "dev": "vercel dev",
-    "build": "echo 'No build step required'",
-    "test": "node test-local.js"
-  },
-  "keywords": ["tender", "scraper", "api", "kemkes"],
-  "author": "Your Name",
-  "license": "MIT",
-  "engines": {
-    "node": ">=18.x"
-  },
-  "dependencies": {},
-  "devDependencies": {}
+    "start": "node api/scraper.js"
+  }
 }
