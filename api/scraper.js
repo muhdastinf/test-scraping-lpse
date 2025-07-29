@@ -15,6 +15,8 @@ function getTokenAndCookie(url, headers) {
                 html += chunk;
             });
 
+            console.log(html);
+
             res.on('end', () => {
                 const tokenRegex = /authenticityToken = '([a-f0-9]+)';/;
                 const match = html.match(tokenRegex);
