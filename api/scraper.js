@@ -89,7 +89,7 @@ async function runScraper(year = 2025, pageNumber = 1, pageSize = 5) {
     };
 
     // Step 1: Get token and cookie
-    const { token, cookie } = await getTokenAndCookie(lelangPageUrl, commonHeaders);
+    const { token, cookie } = await getTokenAndCookie(baseUrl, commonHeaders);
 
     // Step 2: Build payload
     const start = (pageNumber - 1) * pageSize;
@@ -147,7 +147,7 @@ export default async function handler(req, res) {
     } catch (error) {
         // Kirim pesan error jika terjadi kesalahan
         console.error(error); // Log error di sisi server untuk debugging
-        res.status(400).json({ 
+        res.status(500).json({ 
             success: false, 
             error: error.message 
         });
